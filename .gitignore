@@ -1,0 +1,11 @@
+__pycache__/
+.coverage
+htmlcov/
+.cache/
+*.log
+Pipfile.lock
+sl*.csv
+venv/
+.vscode/.ropeproject/
+*.pyc
+coverage_html_report

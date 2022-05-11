@@ -1,0 +1,1 @@
+print('OneConfig init')

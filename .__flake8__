@@ -1,0 +1,17 @@
+ # Configuration file for Flake8 linting
+#
+# Typically there is no need to edit this file.
+
+[flake8]
+ignore = E203,W503,E266,E261
+max-line-length = 180
+exclude =
+    .svn,
+    CVS,
+    .bzr,
+    .hg,
+    .git,
+    __pycache__,
+    .tox
+    .venv/
+    venv/

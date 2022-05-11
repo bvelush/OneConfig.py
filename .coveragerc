@@ -1,0 +1,10 @@
+[html]
+directory = tests/coverage_html_report
+
+[run]
+branch = True
+
+[paths]
+source =
+    src/
+
