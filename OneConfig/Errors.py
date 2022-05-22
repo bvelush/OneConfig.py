@@ -1,3 +1,5 @@
+class SensorNotImplemented(Exception):
+    pass
 
 class TraverseProblem(Exception):
     pass

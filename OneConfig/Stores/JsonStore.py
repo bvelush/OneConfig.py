@@ -1,19 +1,23 @@
-from ..IStore import IStore
-from .. import Errors
-from .. import Const
-from .StoreResult import StoreResult
-from ..Util import StrUtil
-
+# pylint: disable=invalid-name
 import json
 import logging
 from typing import List, Tuple
 
+# pylint: disable=relative-beyond-top-level
+from .. import Errors
+from .. import Const
+from ..IStore import IStore 
+from ..ISensor import ISensor
+from .StoreResult import StoreResult
+
+
 class JsonStore(IStore):
     logger = logging.getLogger(__name__)
 
-    def __init__(self, name: str, store: json):
+    def __init__(self, name: str, store: json, sensors: List[ISensor]):
         self._name = name
         self._store = store
+        self._sensors = sensors
         self._exception_when_no_key = True
 
     @property
@@ -23,27 +27,7 @@ class JsonStore(IStore):
     def get(self, key: str) -> str:
         return 'store-value'
 
-    def _find_sensor_in_key(self, key: str) -> Tuple[str, str]:
-        '''
-        ### Separates the store key to the config and sensor parts
-        In OneConfig, the full key consists of:
-        - [optional] store_key: $store_key.
-        - config_key: subkey1.subkey2
-        - [optional] sensor_key: ?sensor_key
-
-        ### input: config_key?sensor_key
-        ### output: (config_key, sensor_key). Sensor key length will be 0 if sensor is not present
-        Example:
-        - for 'some.config.key?DEV' return will be ('some.config.key', 'DEV')
-        - for 'some.other.key' will return ('some.other.key', '')
-        '''
-        sensor_position = key.find(Const.SENSOR_DELIMITER)
-        sensor_present = sensor_position >= 0
-        if sensor_present:
-            return key[:sensor_position], key[sensor_position+1:]
-        else:
-            return key, ''
-
+    
     def _split_config_key(self, config_key: str) -> List[str]:
         '''
         ### Splits composite config_key to subkeys and checks for their allowed limits

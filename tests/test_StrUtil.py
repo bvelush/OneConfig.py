@@ -1,7 +1,7 @@
-# from ..OneConfig.Util import StrUtil
-from context import StrUtil
+# pylint: disable=invalid-name
 
 import unittest
+from context import StrUtil
 
 class TestCfg(unittest.TestCase):
 
@@ -16,5 +16,17 @@ class TestCfg(unittest.TestCase):
             '': ('',''),
             '..': ('', '.')
         }
-        for case in test_cases:
-            self.assertEqual(StrUtil.split_key(case), test_cases[case])
+        for case, case_result in test_cases.items():
+            self.assertEqual(StrUtil.split_key(case), case_result)
+
+    def test_JsonStore_find_sensor_in_key(self):
+        test_cases = {
+            'some.config.key?DEV': ('some.config.key', 'DEV'),
+            'some.config.key': ('some.config.key', ''),
+            '?DEV': ('', 'DEV'),
+            '': ('', ''),
+            'some.config.key?': ('some.config.key', ''),
+        }
+        for case, case_result in test_cases.items():
+            res = StrUtil.find_sensor_in_key(case)
+            self.assertEqual(res, case_result)

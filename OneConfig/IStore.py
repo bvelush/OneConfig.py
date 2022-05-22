@@ -6,7 +6,7 @@ class IStore:
     '''
     '''
 
-    def __init__(self, name: str, store):
+    def __init__(self, name: str, path: str):
         self._raise_traverse_problems = True
 
     def get(self, key: str) -> str:
@@ -34,3 +34,4 @@ class IStore:
     @raise_traverse_problems.setter
     def raise_traverse_problems(self, val: bool):
         self._raise_traverse_problems = val
+        

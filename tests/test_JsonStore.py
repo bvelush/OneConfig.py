@@ -37,18 +37,7 @@ class TestJsonStore(unittest.TestCase):
 
         res = s._inner_get('k')
 
-    def test_JsonStore_find_sensor_in_key(self):
-        s = JsonStore('s1', json.loads(self.js1))
-        test_cases = {
-            'some.config.key?DEV': ('some.config.key', 'DEV'),
-            'some.config.key': ('some.config.key', ''),
-            '?DEV': ('', 'DEV'),
-            '': ('', ''),
-            'some.config.key?': ('some.config.key', ''),
-        }
-        for case in test_cases:
-            res = s._find_sensor_in_key(case)
-            self.assertEqual(res, test_cases[case])
+    
 
     def test_JsonStore_split_config_key(self):
         s = JsonStore('s1', json.loads(self.js1))
