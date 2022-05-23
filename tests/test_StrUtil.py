@@ -3,7 +3,7 @@
 import unittest
 from context import StrUtil
 
-class TestCfg(unittest.TestCase):
+class Test_StrUtil(unittest.TestCase):
 
     def test_splitkey(self):
         test_cases = {

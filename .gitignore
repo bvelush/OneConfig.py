@@ -9,3 +9,4 @@ venv/
 .vscode/.ropeproject/
 *.pyc
 coverage_html_report
+.venv/

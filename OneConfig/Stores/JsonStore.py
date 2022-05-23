@@ -1,6 +1,7 @@
 # pylint: disable=invalid-name
 import json
 import logging
+import glob
 from typing import List, Tuple
 
 # pylint: disable=relative-beyond-top-level
@@ -8,21 +9,38 @@ from .. import Errors
 from .. import Const
 from ..IStore import IStore 
 from ..ISensor import ISensor
+from ..Util import FileUtil
 from .StoreResult import StoreResult
 
 
 class JsonStore(IStore):
     logger = logging.getLogger(__name__)
 
-    def __init__(self, name: str, store: json, sensors: List[ISensor]):
+    def __init__(self, name: str, sensors: List[ISensor]=None, params: json=None):
         self._name = name
-        self._store = store
         self._sensors = sensors
+        self._params = params
         self._exception_when_no_key = True
+
+        try:
+            self._location = self._params[Const.STORE_LOCATION_ATTR]
+        except Exception as err:
+            raise Errors.StoreNotFound('Attribute "location" is not found in store parameters') from err
+
+        self._location = FileUtil.expand_approot(self._location)
+        
+
 
     @property
     def name(self):
         return self._name
+
+    def _open_store(self, name: str):
+
+        aa  = FileUtil.get_app_path()
+
+        with open(name) as f:
+            self._store = json.load(f)
 
     def get(self, key: str) -> str:
         return 'store-value'

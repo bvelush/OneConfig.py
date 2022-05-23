@@ -1,13 +1,16 @@
 from logging import exception
 from OneConfig.Stores.StoreResult import StoreResult
-from context import Cfg
-from context import IStore
-from context import JsonStore
-from context import Errors
+from tests.context import Cfg
+from tests.context import IStore
+from tests.context import JsonStore
+from tests.context import Errors
+from tests.context import Const
 
 import json
 
 import unittest
+from unittest.mock import mock_open
+from unittest.mock import patch
 
 class TestJsonStore(unittest.TestCase):
 
@@ -25,6 +28,24 @@ class TestJsonStore(unittest.TestCase):
             }
         }
     '''
+
+    store_config = '''
+    {
+        "location": "%APP_ROOT%/Stores/oneconfig.json", 
+        "cache-ttl": "20"
+    }
+    '''
+
+    def test_IStoreJsonTest(self):
+        with patch('OneConfig.Stores.JsonStore.open', mock_open(read_data=self.js1), create=True) as mock_file:
+            s = JsonStore('aa')
+            s._open_store('aa.cfg')
+
+            mock_file.assert_called_once_with('aa.cfg')
+
+    def test_JsonStoreKvargs(self):
+        s = JsonStore(Const.STORE_DEFAULT_NAME, sensors = None, params = json.loads(self.store_config))
+
     def test_aa(self):
         s = JsonStore('s1', json.loads(self.js1))
 
