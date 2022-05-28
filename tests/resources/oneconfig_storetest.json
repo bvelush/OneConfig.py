@@ -1,0 +1,21 @@
+{
+    "global1": "global_value",
+
+    "db": {
+        "server": {
+            "?": "ENV",
+            "DEV": "dev-sql-server",
+            "TEST": "test-sql-server"
+        }
+    },
+
+    "app1": {
+        "svc1": {
+            "connector": {
+                "url": "http://some-url"
+            }
+
+        }
+    }
+
+}

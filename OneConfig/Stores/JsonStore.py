@@ -10,27 +10,43 @@ from .. import Const
 from ..IStore import IStore 
 from ..ISensor import ISensor
 from ..Util import FileUtil
+from ..Util import StrUtil
+from ..Util.CaseInsensitiveDict import CaseInsensitiveDict
 from .StoreResult import StoreResult
 
 
 class JsonStore(IStore):
-    logger = logging.getLogger(__name__)
+    _logger = logging.getLogger(__name__)
 
-    def __init__(self, name: str, sensors: List[ISensor]=None, params: json=None):
-        self._name = name
-        self._sensors = sensors
-        self._params = params
-        self._exception_when_no_key = True
+    def __init__(self, params: json=None, sensors: List[ISensor]=None):
+
+        if sensors != None:
+            self._sensors = sensors
+        else:
+            self._sensors = []
+
+        if params != None:
+            self._params = params
+        else:
+            self._params = json.loads(Const.STORE_DEFAULT_PARAMS)
 
         try:
-            self._location = self._params[Const.STORE_LOCATION_ATTR]
+            self._name = list(self._params.keys())[0] # the name of the params object is a name of the store
+            self._location = FileUtil.expand_approot(self._params[self._name][Const.STORE_LOCATION_ATTR])
         except Exception as err:
-            raise Errors.StoreNotFound('Attribute "location" is not found in store parameters') from err
+            raise Errors.StoreInitError('Attribute "name" is not found in store parameters or is not a string') from err
 
-        self._location = FileUtil.expand_approot(self._location)
+        try: 
+            with open(self._location) as f:
+                self._store = json.load(f, object_pairs_hook=CaseInsensitiveDict) # case insensitive keys comparison
+        except FileNotFoundError as err:
+            raise Errors.StoreNotFound() from err
+        except Exception as err:  
+            raise Errors.StoreOpenError() from err
+
+        self._exception_when_no_key = True
+
         
-
-
     @property
     def name(self):
         return self._name
@@ -71,11 +87,13 @@ class JsonStore(IStore):
         if self.raise_traverse_problems:
             raise Errors.TraverseProblem(subkey, key, self.name, ex)
         else:
-            self.logger.warn(f'Subkey "{subkey}" of the key "{key}" is not found in the store "{self.name}", returning default value. Exception: {ex}')
+            self._logger.warn(f'Subkey "{subkey}" of the key "{key}" is not found in the store "{self.name}", returning default value. Exception: {ex}')
             return StoreResult(None)
 
+    # def _parse_value(self, )
+
     def _inner_get(self, key: str) -> StoreResult:
-        config_key, sensor_key = self._find_sensor_in_key(key)
+        config_key, sensor_key = StrUtil.find_sensor_in_key(key)
 
         # traverse through subkeys to the required level
         # as a result, curr_json will have the json object of desired hierarchy
@@ -96,7 +114,5 @@ class JsonStore(IStore):
                 except KeyError as ex:
                     return self._process_lookup_excepion(sensor_key, key, ex)
         else:
-            return StoreResult(curr_json)
-
-
+            return curr_json
 

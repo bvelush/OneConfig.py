@@ -9,8 +9,7 @@ from tests.context import Const
 import json
 
 import unittest
-from unittest.mock import mock_open
-from unittest.mock import patch
+from unittest.mock import mock_open, Mock, patch
 
 class TestJsonStore(unittest.TestCase):
 
@@ -31,38 +30,65 @@ class TestJsonStore(unittest.TestCase):
 
     store_config = '''
     {
-        "location": "%APP_ROOT%/Stores/oneconfig.json", 
-        "cache-ttl": "20"
+        "default": {
+            "location": "%APP_ROOT%/tests/resources/oneconfig_storetest.json", 
+            "cache-ttl": "20"
+        }
     }
     '''
 
-    def test_IStoreJsonTest(self):
+    def test_JsonStore_init_success(self):
         with patch('OneConfig.Stores.JsonStore.open', mock_open(read_data=self.js1), create=True) as mock_file:
-            s = JsonStore('aa')
-            s._open_store('aa.cfg')
+            s = JsonStore()
+            mock_file.assert_called_once_with('./oneconfig.json')
+            self.assertEqual(s.name, 'default')
 
-            mock_file.assert_called_once_with('aa.cfg')
 
-    def test_JsonStoreKvargs(self):
-        s = JsonStore(Const.STORE_DEFAULT_NAME, sensors = None, params = json.loads(self.store_config))
-
-    def test_aa(self):
-        s = JsonStore('s1', json.loads(self.js1))
-
-        res = s._inner_get('k2l1.k1l2')
-
+    def test_JsonStore_init_fail_wrong_params(self):
         try:
-            res = s._inner_get('')
-        except Exception as ex:
-            self.assertTrue(isinstance(ex, Errors.KeyProblem))
+            s = JsonStore(params=json.loads('{}'))
+        except Errors.StoreInitError as err:
+            self.assertTrue(True)
 
-        res = s._inner_get('k')
+
+    def test_JsonStore_init_fail_StoreOpenError(self):
+        with patch('OneConfig.Stores.JsonStore.open', mock_open(read_data=self.js1), create=True) as mock_file:
+            mock_file.side_effect = Errors.StoreOpenError('Test')
+            try:
+                s = JsonStore()
+            except Errors.StoreOpenError as err:
+                self.assertTrue(True)
+
+
+    def test_JsonStore_init_fail_StoreFileNotFound(self):
+        try:
+            s = JsonStore(params=json.loads('{"store": {"location": "--non-existing--"}}'))
+        except Errors.StoreNotFound as err:
+            self.assertTrue(True)
+
+
+    def test_JsonStore_inner_get_success(self):
+        s = JsonStore(params = json.loads(self.store_config))
+        res = s._inner_get('GLOBAL1')
+        self.assertTrue(res == 'global_value')
+
+        res = s._inner_get('db.server.DEV')
+        self.assertEqual(res, 'dev-sql-server')
+
+        #-- this one doesn't work, consider what to do with it --- res = s._inner_get('db.server.?') # consider s.get('db.server?')
+        #self.assertEqual(res, 'ENV')
+
+
+    def test_JsonStore_inner_get_KeyProblem(self):
+        with patch('OneConfig.Stores.JsonStore.open', mock_open(read_data=self.js1), create=True) as mock_file:
+            s = JsonStore()
+            try:
+                res = s._inner_get('')
+            except Exception as ex:
+                self.assertTrue(isinstance(ex, Errors.KeyProblem))
 
     
-
     def test_JsonStore_split_config_key(self):
-        s = JsonStore('s1', json.loads(self.js1))
-
         test_cases = {
             '': 'KeyProblem',
             's1.s': ['s1', 's'],
@@ -74,26 +100,34 @@ class TestJsonStore(unittest.TestCase):
             's1.s01234567890123456789012345678901.s3': 'KeyProblem' # exception case
         }
 
-        for case in test_cases:
-            try:
-                res = s._split_config_key(case)
-                self.assertEqual(res, test_cases[case]) # this assertion works for non-exception cases
-            except Exception as ex:
-                ex_type = str(type(ex))
-                self.assertTrue(test_cases[case] in ex_type)
+        with patch('OneConfig.Stores.JsonStore.open', mock_open(read_data=self.js1), create=True) as mock_file:
+            s = JsonStore()
+            mock_file.assert_called_once_with('./oneconfig.json')
+
+            for case in test_cases:
+                try:
+                    res = s._split_config_key(case)
+                    self.assertEqual(res, test_cases[case]) # this assertion works for non-exception cases
+                except Exception as ex:
+                    ex_type = str(type(ex))
+                    self.assertTrue(test_cases[case] in ex_type)
+
 
     def test_JsonStore_process_lookup_exception(self):
-        s = JsonStore('s1', json.loads(self.js1))
-        s.raise_traverse_problems = True
-        try:
-            s._process_lookup_excepion('', '', Exception())
-            self.assertTrue(False) # we should not be here
-        except Exception as ex:
-            self.assertTrue(isinstance(ex, Errors.TraverseProblem))
+        with patch('OneConfig.Stores.JsonStore.open', mock_open(read_data=self.js1), create=True) as mock_file:
+            s = JsonStore()
+            mock_file.assert_called_once_with('./oneconfig.json')
 
-        s.raise_traverse_problems = False
-        res = s._process_lookup_excepion('', '', Exception())
-        self.assertTrue(isinstance(res, StoreResult))
+            s.raise_traverse_problems = True
+            try:
+                s._process_lookup_excepion('', '', Exception())
+                self.assertTrue(False) # we should not be here
+            except Exception as ex:
+                self.assertTrue(isinstance(ex, Errors.TraverseProblem))
+
+            s.raise_traverse_problems = False
+            res = s._process_lookup_excepion('', '', Exception())
+            self.assertTrue(isinstance(res, StoreResult))
 
     def test_JsonStore_inner_get(self):
         s = JsonStore('s1', json.loads(self.js1))

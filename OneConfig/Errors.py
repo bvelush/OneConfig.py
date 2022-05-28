@@ -10,6 +10,12 @@ class KeyProblem(Exception):
 class StoreNotFound(Exception):
     pass
 
+class StoreOpenError(Exception):
+    pass
+
+class StoreInitError(Exception):
+    pass
+
 class SensorNotFound(Exception):
     pass
 
