@@ -19,7 +19,7 @@ class JsonStore(IStore):
     _logger = logging.getLogger(__name__)
 
     def __init__(self, params: json=None, sensors: List[ISensor]=None):
-
+        super().__init__()
         if sensors != None:
             self._sensors = sensors
         else:
@@ -43,8 +43,6 @@ class JsonStore(IStore):
             raise Errors.StoreNotFound() from err
         except Exception as err:  
             raise Errors.StoreOpenError() from err
-
-        self._exception_when_no_key = True
 
         
     @property
@@ -85,7 +83,7 @@ class JsonStore(IStore):
          - returns default StoreResult otherwise
         '''
         if self.raise_traverse_problems:
-            raise Errors.TraverseProblem(subkey, key, self.name, ex)
+            raise Errors.KeyProblem(subkey, key, self.name, ex)
         else:
             self._logger.warn(f'Subkey "{subkey}" of the key "{key}" is not found in the store "{self.name}", returning default value. Exception: {ex}')
             return StoreResult(None)
@@ -93,7 +91,8 @@ class JsonStore(IStore):
     # def _parse_value(self, )
 
     def _inner_get(self, key: str) -> StoreResult:
-        config_key, sensor_key = StrUtil.find_sensor_in_key(key)
+        # config_key, sensor_key = StrUtil.find_sensor_in_key(key)
+        config_key = key
 
         # traverse through subkeys to the required level
         # as a result, curr_json will have the json object of desired hierarchy
@@ -105,14 +104,14 @@ class JsonStore(IStore):
                 return self._process_lookup_excepion(subkey, key, ex)
 
         # process sensor key
-        if len(sensor_key) > 0:
-            try:
-                return StoreResult(curr_json[sensor_key])
-            except KeyError as ex: # Question: are there other types or ex possible? What to do with them?
-                try:
-                    return StoreResult(curr_json[Const.SENSOR_DEFAULT]) # try default sensor value
-                except KeyError as ex:
-                    return self._process_lookup_excepion(sensor_key, key, ex)
+        # if len(sensor_key) > 0:
+        #     try:
+        #         return StoreResult(curr_json[sensor_key])
+        #     except KeyError as ex: # Question: are there other types or ex possible? What to do with them?
+        #         try:
+        #             return StoreResult(curr_json[Const.SENSOR_DEFAULT]) # try default sensor value
+        #         except KeyError as ex:
+        #             return self._process_lookup_excepion(sensor_key, key, ex)
         else:
-            return curr_json
+            return StoreResult(curr_json)
 

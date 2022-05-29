@@ -1,11 +1,14 @@
 {
     "global1": "global_value",
+    "global_int": 42,
+    "global_arr": [12, "13", {"abc": "def"}],
 
     "db": {
         "server": {
-            "?": "ENV",
-            "DEV": "dev-sql-server",
-            "TEST": "test-sql-server"
+            "?:ENV": {
+                "DEV": "dev-sql-server",
+                "TEST": "test-sql-server"
+            }
         }
     },
 
