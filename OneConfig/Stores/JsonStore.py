@@ -18,29 +18,31 @@ from .StoreResult import StoreResult
 class JsonStore(IStore):
     _logger = logging.getLogger(__name__)
 
-    def __init__(self, params: json=None):
-        super().__init__()
-        
-        if params is not None:
-            self._params = params
-        else:
-            self._params = json.loads(Const.STORE_DEFAULT_PARAMS)
-
+    @classmethod
+    def from_json_params(cls, params: json):
         try:
-            self._name = list(self._params.keys())[0] # the name of the params object is a name of the store
-            self._location = FileUtil.expand_approot(self._params[self._name][Const.STORE_LOCATION_ATTR])
+            name = list(params.keys())[0] # the name of the params object is a name of the store
+            path = FileUtil.expand_approot(params[name][Const.STORE_PATH_ATTR])
         except Exception as err:
-            raise Errors.StoreInitError('Attribute "name" is not found in store parameters or is not a string') from err
+            raise Errors.StoreInitError(f'Error opening config store with parameters passed. Check the origical exception below for more info') from err
+
+        return JsonStore(name, path)
+
+
+    def __init__(self, name: str, path: str):
+        super().__init__()
+        self._name = name
+        self._path = path
 
         try: 
-            with open(self._location) as f:
-                self._store = json.load(f, object_pairs_hook=CaseInsensitiveDict) # case insensitive keys comparison
+            with open(self._path) as f:
+                self._store = json.load(f, object_pairs_hook=CaseInsensitiveDict) # case insensitive keys comparison in json
         except FileNotFoundError as err:
             raise Errors.StoreNotFound() from err
         except Exception as err:  
             raise Errors.StoreOpenError() from err
-
-        
+    
+            
     @property
     def name(self):
         return self._name
