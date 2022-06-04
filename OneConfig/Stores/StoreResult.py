@@ -1,6 +1,8 @@
 from enum import Enum
 import json
 
+from .. import Const
+
 
 class StoreResult:
 
@@ -34,16 +36,31 @@ class StoreResult:
             VAL_SENSOR_KEYS (sensor_name and keys only; need to resolve sensor and then re-query with direct sensor syntax)
     '''
 
-
-
-
     def __init__(self, val):
         self._type = StoreResult.ResultTypes.VAL_UNDEFINED
         self._value = val
-        if isinstance(val, int):
-            self._type = StoreResult.ResultTypes.VAL_INT
-        elif isinstance(val, str):
+
+        # choises are sorted by likelihood of appearence, for efficiency
+        if isinstance(val, str):
             self._type = StoreResult.ResultTypes.VAL_STRING
+
+        # int type    
+        elif isinstance(val, int):
+            self._type = StoreResult.ResultTypes.VAL_INT
+
+        # condition for a value being a sensor record:
+        # 1. type is dictionaly (more strict, a OneConfig.Util.CaseInsensitiveDict.CaseInsensitiveDict)
+        # 2. there is only one record in this dicionary
+        # 3. and it starts with sensor prfix syntax
+        elif isinstance(val, dict):
+            keys = list(val.keys())
+            if len(keys) == 1 and keys[0].startswith(Const.SENSOR_PREFIX):
+                self._value = {
+                    Const.SENSOR_RESULT_NAME: keys[0][2:].upper(),
+                    Const.SENSOR_RESULT_VALUES: val[keys[0]]
+                }
+                self._type = StoreResult.ResultTypes.VAL_SENSOR
+            
         elif isinstance(val, list):
             self._type = StoreResult.ResultTypes.VAL_LIST
 

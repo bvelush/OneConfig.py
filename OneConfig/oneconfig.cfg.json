@@ -1,0 +1,16 @@
+{
+    "init": {
+        "stores": {
+            "default": {
+                "location": "%APP_ROOT%/tests/resources/oneconfig_storetest.json"
+            }
+        },
+        "sensors": {
+            "env": {
+                "type": "OneConfig.Sensors.EnvSensor",
+                "arg1": "somestring",
+                "arg2": 42
+            }
+        }
+    }
+}

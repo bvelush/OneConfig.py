@@ -18,14 +18,10 @@ from .StoreResult import StoreResult
 class JsonStore(IStore):
     _logger = logging.getLogger(__name__)
 
-    def __init__(self, params: json=None, sensors: List[ISensor]=None):
+    def __init__(self, params: json=None):
         super().__init__()
-        if sensors != None:
-            self._sensors = sensors
-        else:
-            self._sensors = []
-
-        if params != None:
+        
+        if params is not None:
             self._params = params
         else:
             self._params = json.loads(Const.STORE_DEFAULT_PARAMS)
@@ -114,4 +110,3 @@ class JsonStore(IStore):
         #             return self._process_lookup_excepion(sensor_key, key, ex)
         else:
             return StoreResult(curr_json)
-

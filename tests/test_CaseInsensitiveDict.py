@@ -2,7 +2,7 @@ import json
 
 import unittest
 
-from tests.context import CaseInsensitiveDict
+from context import CaseInsensitiveDict
 
 class Test_CaseInsensitiveDict(unittest.TestCase):
 

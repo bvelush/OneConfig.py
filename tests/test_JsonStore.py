@@ -33,8 +33,7 @@ class TestJsonStore(unittest.TestCase):
     store_config = '''
     {
         "default": {
-            "location": "%APP_ROOT%/tests/resources/oneconfig_storetest.json", 
-            "cache-ttl": "20"
+            "location": "%APP_ROOT%/tests/resources/oneconfig_storetest.json"
         }
     }
     '''
@@ -85,8 +84,15 @@ class TestJsonStore(unittest.TestCase):
             self.assertTrue(True)
         
 
-    def test_JsonStore_inner_get_success(self):
+    def test_JsonStore_inner_get_StoreResult(self):
         s = JsonStore(params = json.loads(self.store_config))
+
+        res = s._inner_get('db.server')
+        ret_sensor = res.get()
+        self.assertEqual(ret_sensor[Const.SENSOR_RESULT_NAME], 'ENV')
+        self.assertEqual(ret_sensor[Const.SENSOR_RESULT_VALUES]['dev'], 'dev-sql-server')
+
+
         res = s._inner_get('GLOBAL1')
         self.assertEqual(res.type, StoreResult.ResultTypes.VAL_STRING)
         self.assertEqual(res.get(), 'global_value')
@@ -101,6 +107,8 @@ class TestJsonStore(unittest.TestCase):
 
         res = s._inner_get('db.server.?:ENV.DEV')
         self.assertEqual(res.get(), 'dev-sql-server')
+
+
 
         #-- this one doesn't work, consider what to do with it --- res = s._inner_get('db.server.?') # consider s.get('db.server?')
         #self.assertEqual(res, 'ENV')
