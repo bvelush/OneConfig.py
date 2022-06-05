@@ -117,10 +117,8 @@ class TestJsonStore(unittest.TestCase):
         s = JsonFileStore.from_json_params(params = json.loads(self.store_config))
 
         res = s._inner_get('db.server')
-        ret_sensor = res.value
-        self.assertEqual(ret_sensor[Const.SENSOR_RESULT_NAME], 'ENV')
-        self.assertEqual(ret_sensor[Const.SENSOR_RESULT_VALUES]['dev'], 'dev-sql-server')
-
+        self.assertEqual(res.value[Const.SENSOR_RESULT_NAME], 'ENV')
+        self.assertSequenceEqual(res.value[Const.SENSOR_RESULT_KEYS], ['DEV', 'TEST'])
 
         res = s._inner_get('GLOBAL1')
         self.assertEqual(res.type, StoreResult.ResultTypes.VAL_STRING)
@@ -175,5 +173,5 @@ class TestJsonStore(unittest.TestCase):
 
             res = s._inner_get(Const.CFG_INIT_ATTR)
             self.assertEqual(res.type, StoreResult.ResultTypes.VAL_OBJECT_KEYS)
-            self.assertIn(Const.CFG_STORES_ATTR.lower(), res.value)
-            self.assertIn(Const.CFG_SENSORS_ATTR.lower(), res.value)
+            self.assertIn(Const.CFG_STORES_ATTR, res.value)
+            self.assertIn(Const.CFG_SENSORS_ATTR, res.value)

@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import Enum, auto
 import json
 
 from .. import Const
@@ -7,13 +7,13 @@ from .. import Const
 class StoreResult:
 
     class ResultTypes(Enum):
-        VAL_UNDEFINED = 0,
-        VAL_INT = 1,
-        VAL_STRING = 2,
-        VAL_LIST = 3,
-        VAL_SENSOR = 4,
-        VAL_SENSOR_KEYS = 5,
-        VAL_OBJECT_KEYS = 6
+        VAL_UNDEFINED = auto()
+        VAL_INT = auto()
+        VAL_STRING = auto()
+        VAL_LIST = auto()
+        # VAL_SENSOR = auto()
+        VAL_SENSOR_KEYS = auto() # keys are CAPITALIZED for better comparison
+        VAL_OBJECT_KEYS = auto() # keys are CAPITALIZED for better comparison
 
     '''
         syntax:
@@ -52,19 +52,21 @@ class StoreResult:
         # condition for a value being a sensor record:
         # 1. type is dictionaly (more strict, a OneConfig.Util.CaseInsensitiveDict.CaseInsensitiveDict)
         # 2. there is only one record in this dicionary
-        # 3. and it starts with sensor prfix syntax
+        # 3. and it starts with sensor prefix syntax
         elif isinstance(val, dict):
             keys = list(val.keys())
             if len(keys) == 1 and keys[0].startswith(Const.SENSOR_PREFIX):
                 self._value = {
-                    Const.SENSOR_RESULT_NAME: keys[0][2:].upper(),
-                    Const.SENSOR_RESULT_VALUES: val[keys[0]]
+                    Const.SENSOR_RESULT_NAME: 
+                        keys[0][len(Const.SENSOR_PREFIX):].upper(), # cutting off the sensor preffix
+                    Const.SENSOR_RESULT_KEYS: 
+                        list([key.upper() for key in val[keys[0]].keys()])
                 }
-                self._type = StoreResult.ResultTypes.VAL_SENSOR
+                self._type = StoreResult.ResultTypes.VAL_SENSOR_KEYS
             
             else: # value is an object, but not a sensor
                 self._type = StoreResult.ResultTypes.VAL_OBJECT_KEYS
-                self._value = list(val.keys())
+                self._value = list([key.upper() for key in val.keys()])
             
         elif isinstance(val, list):
             self._type = StoreResult.ResultTypes.VAL_LIST
