@@ -12,7 +12,8 @@ class StoreResult:
         VAL_STRING = 2,
         VAL_LIST = 3,
         VAL_SENSOR = 4,
-        VAL_SENSOR_KEYS = 5
+        VAL_SENSOR_KEYS = 5,
+        VAL_OBJECT_KEYS = 6
 
     '''
         syntax:
@@ -61,10 +62,15 @@ class StoreResult:
                 }
                 self._type = StoreResult.ResultTypes.VAL_SENSOR
             
+            else: # value is an object, but not a sensor
+                self._type = StoreResult.ResultTypes.VAL_OBJECT_KEYS
+                self._value = list(val.keys())
+            
         elif isinstance(val, list):
             self._type = StoreResult.ResultTypes.VAL_LIST
 
-    def get(self):
+    @property
+    def value(self):
         return self._value
 
     @property

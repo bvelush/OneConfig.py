@@ -15,7 +15,7 @@ from ..Util.CaseInsensitiveDict import CaseInsensitiveDict
 from .StoreResult import StoreResult
 
 
-class JsonStore(IStore):
+class JsonFileStore(IStore):
     _logger = logging.getLogger(__name__)
 
     @classmethod
@@ -26,7 +26,7 @@ class JsonStore(IStore):
         except Exception as err:
             raise Errors.StoreInitError(f'Error opening config store with parameters passed. Check the origical exception below for more info') from err
 
-        return JsonStore(name, path)
+        return JsonFileStore(name, path)
 
 
     def __init__(self, name: str, path: str):
@@ -65,12 +65,12 @@ class JsonStore(IStore):
         - 'subkey1.subkey2' -> ['subkey1', 'subkey2']
         '''
         subkeys = config_key.split('.')
-        if len(subkeys) > Const.MAX_KEY_LEVELS:
+        if len(subkeys) > Const.KEY_MAX_LEVELS:
             raise Errors.KeyNestingLimit
 
         for subkey in subkeys:
-            if len(subkey) == 0 or len(subkey) > Const.MAX_SUBKEY_LEN:
-                raise Errors.KeyProblem(f'Length of the subkey should be between 1 and {Const.MAX_SUBKEY_LEN}', subkey, config_key)
+            if len(subkey) == 0 or len(subkey) > Const.KEY_MAX_LEN:
+                raise Errors.KeyProblem(f'Length of the subkey should be between 1 and {Const.KEY_MAX_LEN}', subkey, config_key)
 
         return subkeys
 

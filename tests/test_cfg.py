@@ -2,7 +2,7 @@ from importlib.resources import path
 from context import Cfg
 from context import Errors
 from context import IStore
-from context import JsonStore
+from context import JsonFileStore
 
 import unittest
 from unittest.mock import patch

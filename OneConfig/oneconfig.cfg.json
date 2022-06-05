@@ -1,8 +1,8 @@
 {
-    "init": {
+    "OneConfig": {
         "stores": {
             "default": {
-                "location": "%APP_ROOT%/tests/resources/oneconfig_storetest.json"
+                "path": "%APP_ROOT%/tests/resources/oneconfig_storetest.json"
             }
         },
         "sensors": {

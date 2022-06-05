@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import List
 
 from OneConfig.IStore import IStore
-from OneConfig.Stores.JsonStore import JsonStore
+from OneConfig.Stores.JsonStore import JsonFileStore
 from OneConfig import Errors
 from OneConfig import Const
 
