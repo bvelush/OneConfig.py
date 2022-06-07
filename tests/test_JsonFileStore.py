@@ -71,7 +71,7 @@ class TestJsonStore(unittest.TestCase):
     '''
 
     def test_JsonStore_init_success(self):
-        with patch('OneConfig.Stores.JsonStore.open', mock_open(read_data=self.js1), create=True) as mock_file:
+        with patch('OneConfig.Stores.JsonFileStore.open', mock_open(read_data=self.js1), create=True) as mock_file:
             store = JsonFileStore('default', 'path')
             mock_file.assert_called_once_with('path')
             self.assertEqual(store.name, 'default')
@@ -84,7 +84,7 @@ class TestJsonStore(unittest.TestCase):
             pass
 
     def test_JsonStore_init_fail_StoreOpenError(self):
-        with patch('OneConfig.Stores.JsonStore.open', mock_open(read_data=self.js1), create=True) as mock_file:
+        with patch('OneConfig.Stores.JsonFileStore.open', mock_open(read_data=self.js1), create=True) as mock_file:
             mock_file.side_effect = Errors.StoreOpenError('Test')
             try:
                 JsonFileStore('name', 'path')
@@ -144,7 +144,7 @@ class TestJsonStore(unittest.TestCase):
         self.assertEqual(res.value, 'dev-sql-server')
 
     def test_JsonStore_inner_get_KeyProblem(self):
-        with patch('OneConfig.Stores.JsonStore.open', mock_open(read_data=self.js1), create=True):
+        with patch('OneConfig.Stores.JsonFileStore.open', mock_open(read_data=self.js1), create=True):
             store = JsonFileStore('name', 'path')
             try:
                 store.get('')
@@ -164,7 +164,7 @@ class TestJsonStore(unittest.TestCase):
             's1.s01234567890123456789012345678901.s3': 'KeyProblem' # one of subkeys is over the length limit
         }
 
-        with patch('OneConfig.Stores.JsonStore.open', mock_open(read_data=self.js1), create=True) as mock_file:
+        with patch('OneConfig.Stores.JsonFileStore.open', mock_open(read_data=self.js1), create=True) as mock_file:
             store = JsonFileStore('name', 'path')
             mock_file.assert_called_once_with('path')
 
@@ -177,7 +177,7 @@ class TestJsonStore(unittest.TestCase):
                     self.assertTrue(test_cases[case] in ex_type)
 
     def test_JsonStore_return_object_keys(self):
-        with patch('OneConfig.Stores.JsonStore.open', mock_open(read_data=self.js_with_init_stores), create=True) as mock_file:
+        with patch('OneConfig.Stores.JsonFileStore.open', mock_open(read_data=self.js_with_init_stores), create=True) as mock_file:
             store = JsonFileStore('default', 'path')
 
             res = store.get(Const.CFG_INIT_ATTR)

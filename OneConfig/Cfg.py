@@ -1,37 +1,46 @@
+# pylint: disable=invalid-name
+# pylint: disable=logging-fstring-interpolation
+
+from ast import Is
 import sys
-import os
 import glob
+import json
 import logging
 
 from pathlib import Path
-from typing import List
+from pydoc import locate
 
 from OneConfig.IStore import IStore
-from OneConfig.Stores.JsonStore import JsonFileStore
 from OneConfig import Errors
 from OneConfig import Const
 
 
 class Cfg:
 
-    _stores = dict() # store_id -> IStore
-    _configCache = dict() # key -> str
+    _stores = {} # store_id -> IStore
+    _configCache = {} # key -> str
     _root_config_path = Path()
     _logger = logging.getLogger(__name__)
 
-    def __init__(self, config_path = None, stores = None):
-        print('Cfg init', self)
-        if config_path:
-            self._root_config_path = config_path
-        else: # use app directory
-            # https://stackoverflow.com/questions/404744/determining-application-path-in-a-python-exe-generated-by-pyinstaller
-            self._root_config_path = self._get_config_root()
+    def __init__(self):
+        # https://stackoverflow.com/questions/404744/determining-application-path-in-a-python-exe-generated-by-pyinstaller
+        self._root_config_path = self._get_config_root()
+        self._logger.info(f'OneConfig root directory detected: {self._root_config_path}')
 
-        self._default_store_path = self._find_default_store_path()
+        self._default_store_path = self._find_default_store_path(self._root_config_path)
+
+        default_store_config_str = (Const.STORE_DEFAULT_CONFIG % str(self._default_store_path)) \
+            .replace('\\', '\\\\')  # this is required on windows to make sure the path in JSON is in the right format
+        
+        default_store_config = json.loads(default_store_config_str)
+        store = IStore.load_store_dynamically(default_store_config)
+        self.add_store(store)
+        print(self._default_store_path)
         # if not stores:
         #     aa = JsonStore('def-store')
         #     self.add_store(JsonStore('def-store'))
 
+    
 
     def add_store(self, store: IStore) -> None:
         self._stores[store.name] = store
@@ -47,12 +56,14 @@ class Cfg:
     def _get_config_root(self) -> Path:
         return Path(getattr(sys, '_MEIPASS', Path.cwd()))
 
-    def _find_default_store_path(self) -> str:
-        paths = glob.glob('**/' + Const.STORE_NAME_TEMPLATE, root_dir=self._root_config_path, recursive=True)
+    def _find_default_store_path(self, root_path: Path) -> Path:
+        paths = glob.glob('**/' + Const.STORE_NAME_TEMPLATE, root_dir=root_path, recursive=True)
         if len(paths) == 0:
-            raise Errors.StoreNotFound(f'File with the name template "{Const.STORE_NAME_TEMPLATE}" cannot be found under the "{self._root_config_path}"')
-        elif len(paths) > 1:
-            self._logger.warning(f'More than one config store found under the root directory "{self._root_config_path}", the first found path will be used. List of found paths: "{paths}"')
+            raise Errors.StoreNotFound(f'File with the name template "{Const.STORE_NAME_TEMPLATE}" cannot be found under the "{root_path}"')
+        
+        if len(paths) > 1:
+            self._logger.warning(f'More than one config store found under the root directory "{root_path}", the first found path will be used. List of found paths: "{paths}"')
 
-        self._logger.info(f'Config store "{paths[0]}" will be opened as default OneConfig store')
-        return paths[0]
+        store_path = Path.joinpath(root_path, paths[0])
+        self._logger.info(f'Config store "{store_path}" will be opened as default OneConfig store')
+        return store_path
