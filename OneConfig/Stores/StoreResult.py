@@ -1,5 +1,4 @@
 from enum import Enum, auto
-import json
 
 from .. import Const
 
@@ -58,7 +57,7 @@ class StoreResult:
             if len(keys) == 1 and keys[0].startswith(Const.SENSOR_PREFIX):
                 self._value = {
                     Const.SENSOR_RESULT_NAME: 
-                        keys[0][len(Const.SENSOR_PREFIX):].upper(), # cutting off the sensor preffix
+                        keys[0].removeprefix(Const.SENSOR_PREFIX).upper(), # cutting off the sensor preffix
                     Const.SENSOR_RESULT_KEYS: 
                         list([key.upper() for key in val[keys[0]].keys()])
                 }

@@ -7,8 +7,11 @@ KEY_MAX_LEN = 32 # max length of the subkey: any of k1.k2... should be less or e
 
 STORE_DEFAULT_PARAMS = '''
 {
-    "default": {
-            "path": "./oneconfig.json"
+    "$": {
+            "type": "OneConfig.Stores.JsonFileStore",
+            "params": {
+                "path": "%s"
+            }
         }
 }
 '''
