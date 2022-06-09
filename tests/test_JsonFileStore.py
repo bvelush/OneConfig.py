@@ -60,10 +60,18 @@ class TestJsonStore(unittest.TestCase):
                     }                    
                 },
                 "sensors": {
-                    "env": {
+                    "?:Stage": {
+                        "type": "OneConfig.Sensors.StageSensor",
+                        "params": {
+                            "arg1": "somestring",
+                            "arg2": 42
+                        }
+                    },
+                    "?:test_sensor": {
                         "type": "OneConfig.Sensors.EnvSensor",
-                        "arg1": "somestring",
-                        "arg2": 42
+                        "params": {
+                            "envvar": "path"
+                        }
                     }
                 }
             }

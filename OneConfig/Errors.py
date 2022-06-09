@@ -1,26 +1,30 @@
-class SensorNotImplemented(Exception):
+
+class OneConfigError(Exception):
     pass
 
-class TraverseProblem(Exception):
+class TraverseProblem(OneConfigError):
     pass
 
-class KeyProblem(Exception):
+class KeyProblem(OneConfigError):
     pass
 
-class StoreNotFound(Exception):
+class StoreNotFound(OneConfigError):
     pass
 
-class StoreOpenError(Exception):
+class StoreOpenError(OneConfigError):
     pass
 
-class StoreInitError(Exception):
+class StoreInitError(OneConfigError):
     pass
 
-class SensorNotFound(Exception):
+class SensorInitError(OneConfigError):
     pass
 
-class ErrorConfigLookup(Exception):
+class SensorNotFound(OneConfigError):
     pass
 
-class KeyNestingLimit(Exception):
+class ErrorConfigLookup(OneConfigError):
+    pass
+
+class KeyNestingLimit(OneConfigError):
     pass

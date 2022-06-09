@@ -9,7 +9,7 @@ from .. import Const
 from ..IStore import IStore 
 from ..Util import FileUtil
 from ..Util.CaseInsensitiveDict import CaseInsensitiveDict
-from .StoreResult import StoreResult
+from ..StoreResult import StoreResult
 
 
 class JsonFileStore(IStore):

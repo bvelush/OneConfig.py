@@ -1,15 +1,16 @@
 from enum import Enum, auto
 
-from .. import Const
+from . import Const
 
 
 class StoreResult:
 
     class ResultTypes(Enum):
-        VAL_UNDEFINED = auto()
-        VAL_INT = auto()
-        VAL_STRING = auto()
-        VAL_LIST = auto()
+        VAL_UNDEFINED = auto()  # type was not recognized
+        VAL_INT = auto()        # integer is stored
+        VAL_STRING = auto()     # string is stored
+        VAL_BOOL = auto         # bool is stored
+        VAL_LIST = auto()       # array 
         # VAL_SENSOR = auto()
         VAL_SENSOR_KEYS = auto() # keys are CAPITALIZED for better comparison
         VAL_OBJECT_KEYS = auto() # keys are CAPITALIZED for better comparison
@@ -30,19 +31,21 @@ class StoreResult:
         types:
             VAL_INT
             VAL_STRING
-            * VAL_ARRAY
-            * VAL_OBJECT
+            VAL_LIST
+            VAL_OBJECT_KEYS
             VAL_SENSOR (sensor_name and all KVs)
             VAL_SENSOR_KEYS (sensor_name and keys only; need to resolve sensor and then re-query with direct sensor syntax)
     '''
 
     def __init__(self, val):
-        self._type = StoreResult.ResultTypes.VAL_UNDEFINED
         self._value = val
 
-        # choises are sorted by likelihood of appearence, for efficiency
         if isinstance(val, str):
             self._type = StoreResult.ResultTypes.VAL_STRING
+
+        # !!! it is important that BOOL is before INT, because isinstance(False, int) is True as well as isinstance(False, boot)
+        elif isinstance(val, bool):
+            self._type = StoreResult.ResultTypes.VAL_BOOL
 
         # int type    
         elif isinstance(val, int):
@@ -70,10 +73,42 @@ class StoreResult:
         elif isinstance(val, list):
             self._type = StoreResult.ResultTypes.VAL_LIST
 
+        else:
+            self._type = StoreResult.ResultTypes.VAL_UNDEFINED
+
+
     @property
     def value(self):
         return self._value
 
     @property
-    def type(self):
+    def type(self) -> ResultTypes:
         return self._type
+
+    @property
+    def is_int(self) -> bool:
+        return self.type == StoreResult.ResultTypes.VAL_INT
+
+    @property
+    def is_bool(self) -> bool:
+        return self.type == StoreResult.ResultTypes.VAL_BOOL
+
+    @property
+    def is_string(self) -> bool:
+        return self.type == StoreResult.ResultTypes.VAL_STRING
+
+    @property
+    def is_list(self) -> bool:
+        return self.type == StoreResult.ResultTypes.VAL_LIST
+
+    @property
+    def is_object(self) -> bool:
+        return self.type == StoreResult.ResultTypes.VAL_OBJECT_KEYS
+
+    @property
+    def is_sensor(self) -> bool:
+        return self.type == StoreResult.ResultTypes.VAL_SENSOR_KEYS
+
+    @property
+    def is_undefined(self) -> bool:
+        return self.type == StoreResult.ResultTypes.VAL_UNDEFINED

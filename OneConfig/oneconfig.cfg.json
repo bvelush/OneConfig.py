@@ -1,15 +1,120 @@
 {
     "OneConfig": {
         "stores": {
-            "default": {
-                "path": "%APP_ROOT%/tests/resources/oneconfig_storetest.json"
-            }
+            "$SEC": {
+                "type": "OneConfig.Stores.JsonFileStore", 
+                "params": {
+                    "path": "%APP_ROOT%/tests/resources/testJsonFileStore.cfg.json"
+                }
+            },
+            "$INI": {
+                "type": "OneConfig.Stores.IniFileStore",
+                "params": {
+                    "path": "%APP_ROOT%/tests/resources/oneconfig_storetest.json",
+                    "k1": "v1",
+                    "k2": "v2"
+                }
+            }, 
+            "$DB": {
+                "type": "OneConfig.Stores.MySQLStore", 
+                "cache": "60",
+                "params": {
+                    "server": "server1", 
+                    "user": "user1",
+                    "pw": "pw1"
+                }
+            }                    
         },
         "sensors": {
-            "env": {
+            "?:Stage": {
+                "type": "OneConfig.Sensors.StageSensor",
+                "params": {
+                    "arg1": "somestring",
+                    "arg2": 42
+                }
+            },
+            "?:test_sensor": {
                 "type": "OneConfig.Sensors.EnvSensor",
-                "arg1": "somestring",
-                "arg2": 42
+                "params": {
+                    "envvar": "path"
+                }
+            }
+        }
+    }, 
+
+    "AppName": "My Precious App: {{{AppEnv}}}",
+    "AppEnv": {
+        "?:ENV": {
+            "DEV": "Developer edition", 
+            "TEST": "UAT",
+            "PROD": "Enjoy!"
+        }
+    }, 
+
+    "Users": {
+        "DbUser": {
+            "?:ENV": {
+                "DEV": "mylocaluser", 
+                "TEST": "$TestVault.DbUser",
+                "PROD": "$ProdVault.DbUser"
+            }        
+        },
+        "DbUserPwd": {
+            "?:ENV": {
+                "DEV": "%^&xyz123", 
+                "TEST": "$TestVault.DbUserPwd",
+                "PROD": "$ProdVault.DbUserPwd"
+            }
+        }
+    },
+
+    "DB": {
+        
+        "server": {
+            "?:ENV": {
+                "DEV": "192.168.101.102", 
+                "TEST": "testDbserver.mydomain.com",
+                "PROD": "$ProdVault.DbServerName"
+            }
+        }, 
+        "connString": "server={{{DB.server}}}, protocol=gRPC, transport=https, security=tls12, user={{{Users.DbUser}}}, password={{{Users.DbUserPwd}}}",
+        "cacheTime": {
+            "?:ENV": {
+                "DEV": 60, 
+                "TEST": 180,
+                "PROD": 3600
+            }
+        }
+    },
+
+    "Modules": {
+        "UI": {
+            "ForceMFA": {
+                "?:ENV": {
+                    "DEV": false, 
+                    "TEST": false,
+                    "PROD": true
+                }
+            },
+            "TokenTTL": {
+                "?:ENV": {
+                    "DEV": 60000, 
+                    "TEST": 30000,
+                    "PROD": 8
+                }
+            }, 
+            "SearchUriPrefix": "?search&fuzzy={{{Modules.Search.AllowFuzzy}}}&regex={{{Modules.Search.AllowRegex}}}&results={{{Modules.Search.ResultsCount}}}&GoodLuck!"
+        },
+
+        "Search": {
+            "AllowFuzzy": true,
+            "AllowRegex": false, 
+            "resultsCount": {
+                "?:ENV": {
+                    "DEV": 10, 
+                    "TEST": 100,
+                    "PROD": 200
+                }
             }
         }
     }

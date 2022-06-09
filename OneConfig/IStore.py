@@ -1,3 +1,5 @@
+# pylint: disable=invalid-name
+
 import json
 from pydoc import locate
 
@@ -17,11 +19,11 @@ class IStore:
         self._raise_traverse_problems = True
 
     @classmethod
-    def from_json_params(cls, name: str, params: json):
-        pass
+    def from_json_params(cls, name: str, params: json) -> 'IStore':
+        raise NotImplementedError('this method has to be overloaded in subclasses')
 
     @classmethod
-    def load_store_dynamically(cls, store_config: json):
+    def load_store_dynamically(cls, store_config: json)-> 'IStore':
         store_name = list(store_config.keys())[0]
         if not store_name.startswith(Const.STORE_PREFIX):
             raise Errors.StoreInitError(f'Store Name "{store_name} is expected to start with "{Const.STORE_PREFIX}"')
@@ -41,7 +43,7 @@ class IStore:
         according to the logic of the store. For example, in the SQL store hierarchy could be
         table.key (always 2 levels), in JSON store -- just a path.to.the.value etc.
          '''
-        pass
+        raise NotImplementedError('this method has to be overloaded in subclasses')
 
     @property
     def name(self) -> str:
@@ -49,7 +51,7 @@ class IStore:
         ***OVERRIDE IT***
         Returns the ID of the store
         '''
-        pass
+        raise NotImplementedError('this method has to be overloaded in subclasses')
 
     @property
     def raise_traverse_problems(self) -> bool:
