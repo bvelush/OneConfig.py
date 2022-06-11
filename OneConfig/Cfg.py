@@ -15,13 +15,14 @@ from OneConfig.ISensor import ISensor
 from OneConfig.StoreResult import StoreResult
 from OneConfig import Errors
 from OneConfig import Const
+from OneConfig.Util.CaseInsensitiveDict import CaseInsensitiveDict
 
 
 class Cfg:
 
-    _stores: Dict[str, IStore] = {} # store_name -> IStore
-    _sensors: Dict[str, ISensor] = {} # sensor_name -> ISensor
-    _configCache: Dict[str, StoreResult] = {} # key -> StoreResult
+    _stores: Dict[str, IStore] = CaseInsensitiveDict() # store_name -> IStore
+    _sensors: Dict[str, ISensor] = CaseInsensitiveDict() # sensor_name -> ISensor
+    _configCache: Dict[str, StoreResult] = CaseInsensitiveDict() # key -> StoreResult
     _root_config_path: Path = None
     _logger = logging.getLogger(__name__)
 
@@ -36,7 +37,7 @@ class Cfg:
             .replace('\\', '\\\\')  # this is required on windows to make sure the path in JSON is in the right format
         
         default_store_config = json.loads(default_store_config_str)
-        store = IStore.load_store_dynamically(default_store_config)
+        store = IStore.load_store_dynamically(Const.STORE_PREFIX, default_store_config) # name for default store is a store prefix
         store.raise_traverse_problems = False
         self.add_store(store)
         self._default_store = store
@@ -46,7 +47,8 @@ class Cfg:
         sensors_object = self._default_store.get(sensors_path)
         if sensors_object.is_object:
             for sensor_name in sensors_object.value:
-                self.init_sensor(self._default_store.get(f'{sensors_path}.{sensor_name}'))
+                sensor_object = self._default_store._store[Const.CFG_INIT_ATTR][Const.CFG_SENSORS_ATTR][sensor_name]  # TODO: this is quick and dirty, preferably access it through IStore/StoreResult
+                self.init_sensor(sensor_name, sensor_object)
         else:
             self._logger.warning(f'Sensors definition is not found in default configuration (path "{sensors_path}" is not present or is not valid sensor syntax')
 
@@ -58,8 +60,9 @@ class Cfg:
     def add_sensor(self, sensor: ISensor) -> None:
         self._sensors[sensor.name.upper()] = sensor
 
-    def init_sensor(self, params: json) -> None:
-        pass
+    def init_sensor(self, sensor_name: str, params: json) -> None:
+        sensor = ISensor.load_sensor_dynamically(sensor_name, params)
+        self.add_sensor(sensor)
 
     def print_stores(self):
         for store in self._stores:

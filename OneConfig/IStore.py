@@ -23,16 +23,15 @@ class IStore:
         raise NotImplementedError('this method has to be overloaded in subclasses')
 
     @classmethod
-    def load_store_dynamically(cls, store_config: json)-> 'IStore':
-        store_name = list(store_config.keys())[0]
+    def load_store_dynamically(cls, store_name: str, store_config: json)-> 'IStore':
         if not store_name.startswith(Const.STORE_PREFIX):
             raise Errors.StoreInitError(f'Store Name "{store_name} is expected to start with "{Const.STORE_PREFIX}"')
         
-        store_type = store_config[store_name][Const.STORE_TYPE_ATTR]
+        store_type = store_config[Const.STORE_TYPE_ATTR]
         store_class = locate(store_type)
         if not issubclass(store_class, IStore):
             raise Errors.StoreInitError(f'Class "{store_class}" defined by "{Const.STORE_TYPE_ATTR}" in configuration, is expected to be an "IStore" instance ')
-        store = store_class.from_json_params(store_name, store_config[store_name][Const.STORE_PARAMS_ATTR])
+        store = store_class.from_json_params(store_name, store_config[Const.STORE_PARAMS_ATTR])
         return store
 
     def get(self, key: str) -> str:

@@ -16,13 +16,13 @@ class JsonFileStore(IStore):
     _logger = logging.getLogger(__name__)
 
     @classmethod
-    def from_json_params(cls, name: str, params: json):
+    def from_json_params(cls, store_name: str, params: json) -> 'JsonFileStore':
         try:
             path = FileUtil.expand_approot(params[Const.STORE_PATH_ATTR])
         except Exception as err:
             raise Errors.StoreInitError('Error opening config store with parameters passed. Check the origical exception below for more info') from err
 
-        return JsonFileStore(name, path)
+        return JsonFileStore(store_name, path)
 
 
     def __init__(self, name: str, path: str):

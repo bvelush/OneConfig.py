@@ -12,3 +12,5 @@ from OneConfig import Const
 from OneConfig.Util import StrUtil
 from OneConfig.Util import FileUtil
 from OneConfig.Util.CaseInsensitiveDict import CaseInsensitiveDict
+from OneConfig.ISensor import ISensor
+from OneConfig.Sensors.EnvSensor import EnvSensor

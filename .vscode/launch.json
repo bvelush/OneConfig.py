@@ -11,14 +11,22 @@
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
-            "justMyCode": true
+            "justMyCode": true,
+            "env": {
+                "abc": "42", 
+                "def": "somestring"
+            }
         },
         {
             "name": "Debug Tests",
             "type": "python",
             "request": "test",
             "console": "internalConsole",
-            "justMyCode": true
+            "justMyCode": true,
+            "env": {
+                "abc": "42", 
+                "def": "somestring"
+            }
         }
     ]
 }

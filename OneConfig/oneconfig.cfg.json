@@ -26,17 +26,16 @@
             }                    
         },
         "sensors": {
-            "?:Stage": {
-                "type": "OneConfig.Sensors.StageSensor",
+            "?:ENV_DEF": {
+                "type": "OneConfig.Sensors.EnvSensor.EnvSensor",
                 "params": {
-                    "arg1": "somestring",
-                    "arg2": 42
+                    "envvar": "DEF"
                 }
             },
-            "?:test_sensor": {
-                "type": "OneConfig.Sensors.EnvSensor",
+            "?:ENV_ABC": {
+                "type": "OneConfig.Sensors.EnvSensor.EnvSensor",
                 "params": {
-                    "envvar": "path"
+                    "envvar": "abc"
                 }
             }
         }
