@@ -90,4 +90,4 @@ class JsonFileStore(IStore):
             except KeyError as ex: # Question: are there other types or ex possible? What to do with them?
                 return self._process_lookup_excepion(subkey, key, ex)
 
-        return StoreResult(curr_json)
+        return StoreResult(curr_json, self.allow_object_result)

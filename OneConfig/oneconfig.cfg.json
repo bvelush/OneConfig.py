@@ -2,28 +2,11 @@
     "OneConfig": {
         "stores": {
             "$SEC": {
-                "type": "OneConfig.Stores.JsonFileStore", 
+                "type": "OneConfig.Stores.JsonFileStore.JsonFileStore", 
                 "params": {
                     "path": "%APP_ROOT%/tests/resources/testJsonFileStore.cfg.json"
                 }
-            },
-            "$INI": {
-                "type": "OneConfig.Stores.IniFileStore",
-                "params": {
-                    "path": "%APP_ROOT%/tests/resources/oneconfig_storetest.json",
-                    "k1": "v1",
-                    "k2": "v2"
-                }
-            }, 
-            "$DB": {
-                "type": "OneConfig.Stores.MySQLStore", 
-                "cache": "60",
-                "params": {
-                    "server": "server1", 
-                    "user": "user1",
-                    "pw": "pw1"
-                }
-            }                    
+            }            
         },
         "sensors": {
             "?:DEPLOY": {

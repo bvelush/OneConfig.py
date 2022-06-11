@@ -92,11 +92,23 @@ class Test_StoreResult(unittest.TestCase):
         self.assertFalse(sr.is_object)
         self.assertFalse(sr.is_sensor)        
 
-    def test_StoreResult_object(self):
+    def test_StoreResult_object_keys(self):
         sr = StoreResult(self.json_types['object'])
         self.assertEqual(sr.type, StoreResult.ResultTypes.VAL_OBJECT_KEYS)
         self.assertSequenceEqual(sr.value, ['KEY1', 'KEY2', 'KEY3']) # note the capitalization
         self.assertTrue(sr.is_object)
+        self.assertFalse(sr.is_undefined)
+        self.assertFalse(sr.is_int)
+        self.assertFalse(sr.is_bool)
+        self.assertFalse(sr.is_string)
+        self.assertFalse(sr.is_list)
+        self.assertFalse(sr.is_sensor) 
+
+    def test_StoreResult_json_object(self):
+        sr = StoreResult(self.json_types['object'], allow_objects=True)
+        self.assertEqual(sr.type, StoreResult.ResultTypes.VAL_JSON_OBJECT)
+        self.assertEqual(sr.value, self.json_types['object'])
+        self.assertFalse(sr.is_object)
         self.assertFalse(sr.is_undefined)
         self.assertFalse(sr.is_int)
         self.assertFalse(sr.is_bool)

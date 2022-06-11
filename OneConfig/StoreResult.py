@@ -1,4 +1,5 @@
 from enum import Enum, auto
+from typing import Any
 
 from . import Const
 
@@ -14,6 +15,7 @@ class StoreResult:
         # VAL_SENSOR = auto()
         VAL_SENSOR_KEYS = auto() # keys are CAPITALIZED for better comparison
         VAL_OBJECT_KEYS = auto() # keys are CAPITALIZED for better comparison
+        VAL_JSON_OBJECT = auto() # only default json store will be allowed to provide that for IStore and ISensor init
 
     '''
         syntax:
@@ -37,8 +39,9 @@ class StoreResult:
             VAL_SENSOR_KEYS (sensor_name and keys only; need to resolve sensor and then re-query with direct sensor syntax)
     '''
 
-    def __init__(self, val):
+    def __init__(self, val: Any, allow_objects: bool = False):
         self._value = val
+        self._allow_objects = allow_objects
 
         if isinstance(val, str):
             self._type = StoreResult.ResultTypes.VAL_STRING
@@ -67,8 +70,12 @@ class StoreResult:
                 self._type = StoreResult.ResultTypes.VAL_SENSOR_KEYS
             
             else: # value is an object, but not a sensor
-                self._type = StoreResult.ResultTypes.VAL_OBJECT_KEYS
-                self._value = list([key.upper() for key in val.keys()])
+                if self._allow_objects:
+                    self._type = StoreResult.ResultTypes.VAL_JSON_OBJECT
+                    self._value = val
+                else:
+                    self._type = StoreResult.ResultTypes.VAL_OBJECT_KEYS
+                    self._value = list([key.upper() for key in val.keys()])
             
         elif isinstance(val, list):
             self._type = StoreResult.ResultTypes.VAL_LIST

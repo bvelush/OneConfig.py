@@ -16,7 +16,8 @@ class IStore:
     '''
 
     def __init__(self):
-        self._raise_traverse_problems = True
+        self.raise_traverse_problems = True
+        self.allow_object_result = False
 
     @classmethod
     def from_json_params(cls, name: str, params: json) -> 'IStore':
@@ -57,6 +58,14 @@ class IStore:
         return self._raise_traverse_problems
 
     @raise_traverse_problems.setter
-    def raise_traverse_problems(self, val: bool):
+    def raise_traverse_problems(self, val: bool) -> None:
         self._raise_traverse_problems = val
+
+    @property
+    def allow_object_result(self) -> bool:
+        return self._allow_object_result
+
+    @allow_object_result.setter
+    def allow_object_result(self, val: bool) -> None:
+        self._allow_object_result = val
         
