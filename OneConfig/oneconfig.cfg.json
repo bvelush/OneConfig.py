@@ -26,16 +26,21 @@
             }                    
         },
         "sensors": {
-            "?:ENV_DEF": {
+            "?:DEPLOY": {
                 "type": "OneConfig.Sensors.EnvSensor.EnvSensor",
                 "params": {
-                    "envvar": "DEF"
+                    "envvar": "DEPLOY"
                 }
             },
             "?:ENV_ABC": {
                 "type": "OneConfig.Sensors.EnvSensor.EnvSensor",
                 "params": {
                     "envvar": "abc"
+                }
+            },
+            "?:DOMAIN": {
+                "type": "OneConfig.Sensors.DomainSensor.DomainSensor",
+                "params": {
                 }
             }
         }

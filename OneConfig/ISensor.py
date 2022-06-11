@@ -8,8 +8,8 @@ from OneConfig import Const
 
 class ISensor:
     
-    def __init__(self):
-        pass
+    def __init__(self, sensor_name: str):
+        self._name = sensor_name
     
     @classmethod
     def from_json_params(cls, name: str, params: json) -> 'ISensor':
@@ -29,11 +29,7 @@ class ISensor:
 
     @property
     def name(self) -> str:
-        '''
-        ***OVERRIDE IT***
-        Returns the ID of the store
-        '''
-        raise NotImplementedError('this method has to be overloaded in subclasses')
+        return self._name
 
     def get(self) -> str:
         raise NotImplementedError('this method has to be overloaded in subclasses')

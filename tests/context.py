@@ -1,3 +1,6 @@
+# pylint: disable=import-error
+# pylint: disable=unused-import
+
 import os
 import sys
 
@@ -14,3 +17,4 @@ from OneConfig.Util import FileUtil
 from OneConfig.Util.CaseInsensitiveDict import CaseInsensitiveDict
 from OneConfig.ISensor import ISensor
 from OneConfig.Sensors.EnvSensor import EnvSensor
+from OneConfig.Sensors.DomainSensor import DomainSensor
