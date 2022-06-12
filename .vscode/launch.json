@@ -13,9 +13,9 @@
             "console": "integratedTerminal",
             "justMyCode": true,
             "env": {
-                "abc": "42", 
+                "abc": "TEST", 
                 "def": "somestring",
-                "deploy22": "DEMO"
+                "deploy": "DEMO"
             }
         },
         {
@@ -25,9 +25,9 @@
             "console": "internalConsole",
             "justMyCode": true,
             "env": {
-                "abc": "42", 
+                "abc": "TEST", 
                 "def": "somestring",
-                "deploy22": "DEMO"
+                "deploy": "DEMO"
             }
         }
     ]

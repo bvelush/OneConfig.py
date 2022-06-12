@@ -31,10 +31,11 @@
 
     "AppName": "My Precious App: {{{AppEnv}}}",
     "AppEnv": {
-        "?:ENV": {
-            "DEV": "Developer edition", 
-            "TEST": "UAT",
-            "PROD": "Enjoy!"
+        "?:ENV_ABC": {
+            "DEV": "Dev version", 
+            "TEST": "UAT version",
+            "PROD": "Enjoy!", 
+            "DEFAULT": "You have to define the ABC ENVVAR"
         }
     }, 
 

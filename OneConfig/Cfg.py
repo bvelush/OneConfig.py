@@ -25,11 +25,12 @@ class Cfg:
     _configCache: Dict[str, StoreResult] = CaseInsensitiveDict() # key -> StoreResult
     _root_config_path: Path = None
     _logger = logging.getLogger(__name__)
-    _STR_CONFIGKEY = r'(?P<fullKey>((?P<store>\$\w+)\.)?(?P<path>\w+(\.[\w\?\:]+)*)+)'
+    _STR_CONFIGKEY = r'(?P<fullKey>((?P<store>\$\w*)\.)?(?P<path>\w+(\.[\w\?\:]+)*)+)'
     _RX_STR_CONFIGKEY = re.compile(_STR_CONFIGKEY)
     _RX_STR_INLINE_CONFIGKEY = re.compile(r'(\{\{\{){1}' + _STR_CONFIGKEY + r'(\}\}\}){1}')
 
     def _inner_get(self, key: str, count: int):  
+        self._logger.debug(f'key:"{key}", count: "{count}"')
         if count > Const.CFG_MAX_RECURSION:
             raise Errors.KeyNestingLimit('CATCH ME AT GET TO HAVE ORIGINAL PATH -> ... -> ...')
 
@@ -49,7 +50,7 @@ class Cfg:
                 if inner_key:
                     # replace inner_key with inner_key_value in result.value:
                     inner_key_value = self._inner_get(inner_key.groupdict()['fullKey'], count+1)
-                    value_to_return = self._RX_STR_INLINE_CONFIGKEY.sub(inner_key_value, value_to_return)
+                    value_to_return = self._RX_STR_INLINE_CONFIGKEY.sub(inner_key_value, value_to_return, count=1)
                 else:
                     return value_to_return
                 
@@ -59,26 +60,15 @@ class Cfg:
             sensor_value = sensor.get()
             return self._inner_get(f'{key}.{sensor_name}.{sensor_value}', count+1)
                 
-
-
-
-
         elif result.is_object_keys: # TODO: ATTENTION! definition of is_undefined is JSON_OBJECT or UNDEFINED
-            raise "TODO: understand what needs to be done here"
+            raise Errors.KeyProblem(f'key: "{key}", count: "{count}", components: "{key_components}", result: "{result.value}"')
         else:
-            raise "TODO: Really to be here a very good reason has exist. Check the conditions chain"
-
-
-        
-
-        ss = self._RX_STR_CONFIGKEY.search(key)
-        ss1 = self._RX_STR_INLINE_CONFIGKEY.search(key)
-
-
-        print(ss)
+            raise Errors.KeyProblem(f'key: "{key}", count: "{count}", components: "{key_components}", result: "{result.value}"')
 
 
     def get_store(self, store_name: str) -> IStore:
+        if not store_name:
+            store_name = Const.STORE_PREFIX
         return self._stores[store_name]
 
 
