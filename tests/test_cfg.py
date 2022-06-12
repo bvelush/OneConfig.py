@@ -12,8 +12,29 @@ from unittest.mock import patch
 
 class TestCfg(unittest.TestCase):
 
-    def test_find_default_store_path(self):
+    test_cases = [
+        ['$sec.dbuser.detected.?:deploy.specified', 'Explicit Sensor notation is working', 'Explicitly specified sensor "some.key?:sensor.value" expected to work'], 
+        # ['$sec.dbuser.recursive_key1', 'the_actual_value="Running NOT under VSCode debugger"', 'sensor is resolved and inner_key rendered'],
+        ['$sec.dbuser.recursive_key2', 'the_actual_value="Running NOT under VSCode debugger"&pwd="My Precious App: Enjoy!"', 'sensor is resolved and inner_key rendered']
+    ]
+
+    def test_inner_get_cases(self):
         cfg = Cfg()
+        for test_case in self.test_cases:
+            result = cfg._inner_get(test_case[0], 0)
+            expected = test_case[1]
+            message = test_case[2]
+            self.assertEqual(result, expected, message)
+        
+
+
+    def test_inner_get_fails_when_debugged_specially(self):
+        cfg = Cfg()
+        result = cfg._inner_get('$sec.dbuser.recursive_key1', 0)
+        self.assertEqual(result, 'the_actual_value="Running NOT under VSCode debugger"')
+        
+        # attention: this will be true in case of debug:
+        # self.assertEqual(result, 'the_actual_value="Sensor feeling the ENVVAR"')
 
         # with patch('glob.glob') as mock_glob:
         #     with patch('pathlib.Path.cwd') as mock_cwd:

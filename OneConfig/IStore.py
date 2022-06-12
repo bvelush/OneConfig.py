@@ -5,6 +5,7 @@ from pydoc import locate
 
 from OneConfig import Errors
 from OneConfig import Const
+from OneConfig.StoreResult import StoreResult
 
 #from OneConfig.Stores.JsonFileStore import JsonFileStore
 '''
@@ -35,7 +36,7 @@ class IStore:
         store = store_class.from_json_params(store_name, store_config[Const.STORE_PARAMS_ATTR])
         return store
 
-    def get(self, key: str) -> str:
+    def get(self, key: str) -> StoreResult:
         '''
         ***OVERRIDE IT***
         Returns the value of the key from the store.

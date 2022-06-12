@@ -133,7 +133,7 @@ class TestJsonStore(unittest.TestCase):
         store = JsonFileStore.from_json_params('$SEC', params = json.loads(self.store_config))
 
         res = store.get('db.server')
-        self.assertEqual(res.value[Const.SENSOR_RESULT_NAME], 'ENV')
+        self.assertEqual(res.value[Const.SENSOR_RESULT_NAME], '?:ENV')
         self.assertSequenceEqual(res.value[Const.SENSOR_RESULT_KEYS], ['DEV', 'TEST'])
 
         res = store.get('GLOBAL1')

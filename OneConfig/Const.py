@@ -1,6 +1,7 @@
 CFG_INIT_ATTR = 'ONECONFIG'
 CFG_STORES_ATTR = "STORES"
 CFG_SENSORS_ATTR = "SENSORS"
+CFG_MAX_RECURSION = 5
 
 KEY_MAX_LEVELS = 15 # max keys nesting: k1.k2.k3...k15 max
 KEY_MAX_LEN = 32 # max length of the subkey: any of k1.k2... should be less or equal to MAX_SUBKEY_LEN

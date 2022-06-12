@@ -1,4 +1,16 @@
 {
-    "dbuser": "user_account1",
+    "dbuser": {
+        "detected": {
+            "?:DEPLOY": {
+                "Specified": "Explicit Sensor notation is working",
+                "DEMO": "Sensor feeling the ENVVAR",
+                "DEFAULT": "Running NOT under VSCode debugger"
+            }
+        }, 
+        "simple": "Simple key notation", 
+        "recursive_key1": "the_actual_value=\"{{{$sec.dbuser.detected}}}\"", 
+        "recursive_key2": "the_actual_value=\"{{{$sec.dbuser.detected}}}\"&pwd=\"{{{$.AppName}}}\"" 
+    },
+    
     "dbuser_pwd": "some_secret"
 }

@@ -5,10 +5,10 @@ import sys
 import glob
 import json
 import logging
+import re
 
 from typing import Dict
 from pathlib import Path
-from pydoc import locate
 
 from OneConfig.IStore import IStore
 from OneConfig.ISensor import ISensor
@@ -25,6 +25,66 @@ class Cfg:
     _configCache: Dict[str, StoreResult] = CaseInsensitiveDict() # key -> StoreResult
     _root_config_path: Path = None
     _logger = logging.getLogger(__name__)
+    _STR_CONFIGKEY = r'(?P<fullKey>((?P<store>\$\w+)\.)?(?P<path>\w+(\.[\w\?\:]+)*)+)'
+    _RX_STR_CONFIGKEY = re.compile(_STR_CONFIGKEY)
+    _RX_STR_INLINE_CONFIGKEY = re.compile(r'(\{\{\{){1}' + _STR_CONFIGKEY + r'(\}\}\}){1}')
+
+    def _inner_get(self, key: str, count: int):  
+        if count > Const.CFG_MAX_RECURSION:
+            raise Errors.KeyNestingLimit('CATCH ME AT GET TO HAVE ORIGINAL PATH -> ... -> ...')
+
+        key_components = self._RX_STR_CONFIGKEY.search(key).groupdict()
+        store = self.get_store(key_components['store'])
+        result = store.get(key_components['path'])
+        if result.is_bool or result.is_int or result.is_list:
+            return result
+
+        elif result.is_string: # the string could contain inner OneConfig keys, need to recursively resolve them
+
+            # todo: {{{...}}} ... {{{...}}} situation
+            value_to_return = result.value
+            while True:
+                inner_key = self._RX_STR_INLINE_CONFIGKEY.search(value_to_return)
+
+                if inner_key:
+                    # replace inner_key with inner_key_value in result.value:
+                    inner_key_value = self._inner_get(inner_key.groupdict()['fullKey'], count+1)
+                    value_to_return = self._RX_STR_INLINE_CONFIGKEY.sub(inner_key_value, value_to_return)
+                else:
+                    return value_to_return
+                
+        elif result.is_sensor:
+            sensor_name = result.value[Const.SENSOR_RESULT_NAME]
+            sensor = self.get_sensor(sensor_name)
+            sensor_value = sensor.get()
+            return self._inner_get(f'{key}.{sensor_name}.{sensor_value}', count+1)
+                
+
+
+
+
+        elif result.is_object_keys: # TODO: ATTENTION! definition of is_undefined is JSON_OBJECT or UNDEFINED
+            raise "TODO: understand what needs to be done here"
+        else:
+            raise "TODO: Really to be here a very good reason has exist. Check the conditions chain"
+
+
+        
+
+        ss = self._RX_STR_CONFIGKEY.search(key)
+        ss1 = self._RX_STR_INLINE_CONFIGKEY.search(key)
+
+
+        print(ss)
+
+
+    def get_store(self, store_name: str) -> IStore:
+        return self._stores[store_name]
+
+
+    def get_sensor(self, sensor_name: str) -> ISensor:
+        return self._sensors[sensor_name]
+
 
     def __init__(self):
         # region Open Default Store
@@ -84,13 +144,9 @@ class Cfg:
         store = IStore.load_store_dynamically(store_name, params)
         self.add_store(store)
 
-    def print_stores(self):
-        for store in self._stores:
-            print(f'{store} -> {self._stores[store]}')
-
-    def get(self, key: str) -> str:
-        if key.startswith('$'):
-            store_name, target_key = key.split('.', 2)
+    # def get(self, key: str) -> str:
+    #     if key.startswith('$'):
+    #         store_name, target_key = key.split('.', 2)
 
     def _get_config_root(self) -> Path:
         # https://stackoverflow.com/questions/404744/determining-application-path-in-a-python-exe-generated-by-pyinstaller

@@ -14,7 +14,8 @@
             "justMyCode": true,
             "env": {
                 "abc": "42", 
-                "def": "somestring"
+                "def": "somestring",
+                "deploy22": "DEMO"
             }
         },
         {
@@ -25,7 +26,8 @@
             "justMyCode": true,
             "env": {
                 "abc": "42", 
-                "def": "somestring"
+                "def": "somestring",
+                "deploy22": "DEMO"
             }
         }
     ]

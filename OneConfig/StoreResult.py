@@ -63,7 +63,7 @@ class StoreResult:
             if len(keys) == 1 and keys[0].startswith(Const.SENSOR_PREFIX):
                 self._value = {
                     Const.SENSOR_RESULT_NAME: 
-                        keys[0].removeprefix(Const.SENSOR_PREFIX).upper(), # cutting off the sensor preffix
+                        keys[0].upper(), 
                     Const.SENSOR_RESULT_KEYS: 
                         list([key.upper() for key in val[keys[0]].keys()])
                 }
@@ -109,7 +109,7 @@ class StoreResult:
         return self.type == StoreResult.ResultTypes.VAL_LIST
 
     @property
-    def is_object(self) -> bool:
+    def is_object_keys(self) -> bool:
         return self.type == StoreResult.ResultTypes.VAL_OBJECT_KEYS
 
     @property
@@ -118,4 +118,4 @@ class StoreResult:
 
     @property
     def is_undefined(self) -> bool:
-        return self.type == StoreResult.ResultTypes.VAL_UNDEFINED
+        return self.type == StoreResult.ResultTypes.VAL_UNDEFINED or self.type == StoreResult.ResultTypes.VAL_JSON_OBJECT
