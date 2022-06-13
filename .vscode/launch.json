@@ -29,6 +29,18 @@
                 "def": "somestring",
                 "deploy": "DEMO"
             }
+        },
+        {
+            "name": "OneConfigMgmt",
+            "type": "python", 
+            "request": "launch", 
+            "program": "OneConfigMgmt.py", 
+            "args": ["encrypt", "c:/temp/keyfile.dev", "C:/d/oneconfig-py/tests/resources/testJsonFileStore.cfg.json", "C:/d/oneconfig-py/tests/resources/testJsonFileStore.cfg.bin"],
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "env": {
+                
+            }
         }
     ]
 }

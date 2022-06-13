@@ -9,6 +9,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 from OneConfig.Cfg import Cfg
 from OneConfig.IStore import IStore
 from OneConfig.Stores.JsonFileStore import JsonFileStore
+from OneConfig.Stores.EncryptedJsonFileStore import EncryptedJsonFileStore
 from OneConfig.StoreResult import StoreResult
 from OneConfig import Errors
 from OneConfig import Const

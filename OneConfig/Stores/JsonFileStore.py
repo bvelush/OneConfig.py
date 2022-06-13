@@ -15,16 +15,12 @@ from ..StoreResult import StoreResult
 class JsonFileStore(IStore):
     _logger = logging.getLogger(__name__)
 
-    def __init__(self, name: str, path: str):
+    def __init__(self, name: str, content: str):
         super().__init__()
         self._name = name
-        self._path = path
 
         try: 
-            with open(self._path) as f:
-                self._store = json.load(f, object_pairs_hook=CaseInsensitiveDict) # case insensitive keys comparison in json
-        except FileNotFoundError as err:
-            raise Errors.StoreNotFound() from err
+            self._store = json.loads(content, object_pairs_hook=CaseInsensitiveDict) # case insensitive keys comparison in json
         except Exception as err:  
             raise Errors.StoreOpenError() from err
     
@@ -36,7 +32,15 @@ class JsonFileStore(IStore):
         except Exception as err:
             raise Errors.StoreInitError('Error opening config store with parameters passed. Check the origical exception below for more info') from err
 
-        return JsonFileStore(store_name, path)
+
+        try: 
+            with open(path, 'rt') as f:
+                raw_content = f.read() 
+        except OSError as err:  
+            raise Errors.StoreNotFound() from err
+
+
+        return JsonFileStore(store_name, raw_content)
 
                 
     @property

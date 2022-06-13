@@ -2,9 +2,10 @@
     "OneConfig": {
         "stores": {
             "$SEC": {
-                "type": "OneConfig.Stores.JsonFileStore.JsonFileStore", 
+                "type": "OneConfig.Stores.EncryptedJsonFileStore.EncryptedJsonFileStore", 
                 "params": {
-                    "path": "%APP_ROOT%/tests/resources/testJsonFileStore.cfg.json"
+                    "path": "%APP_ROOT%/tests/resources/testJsonFileStore.cfg.bin", 
+                    "keypath": "c:/temp/keyfile.dev"
                 }
             }            
         },

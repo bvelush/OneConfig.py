@@ -80,9 +80,9 @@ class TestJsonStore(unittest.TestCase):
 
     def test_JsonStore_init_success(self):
         with patch('OneConfig.Stores.JsonFileStore.open', mock_open(read_data=self.js1), create=True) as mock_file:
-            store = JsonFileStore('default', 'path')
-            mock_file.assert_called_once_with('path')
-            self.assertEqual(store.name, 'default')
+            store = JsonFileStore.from_json_params('name', json.loads(self.store_config))
+            mock_file.assert_called_once()
+            self.assertEqual(store.name, 'name')
 
     def test_JsonStore_init_fail_wrong_params(self):
         try:
@@ -153,7 +153,7 @@ class TestJsonStore(unittest.TestCase):
 
     def test_JsonStore_inner_get_KeyProblem(self):
         with patch('OneConfig.Stores.JsonFileStore.open', mock_open(read_data=self.js1), create=True):
-            store = JsonFileStore('name', 'path')
+            store = JsonFileStore.from_json_params('name', json.loads(self.store_config))
             try:
                 store.get('')
                 self.assertTrue(False)  # should not go here
@@ -173,8 +173,8 @@ class TestJsonStore(unittest.TestCase):
         }
 
         with patch('OneConfig.Stores.JsonFileStore.open', mock_open(read_data=self.js1), create=True) as mock_file:
-            store = JsonFileStore('name', 'path')
-            mock_file.assert_called_once_with('path')
+            store = JsonFileStore.from_json_params('name', json.loads(self.store_config))
+            mock_file.assert_called_once()
 
             for case in test_cases:
                 try:
@@ -186,7 +186,7 @@ class TestJsonStore(unittest.TestCase):
 
     def test_JsonStore_return_object_keys(self):
         with patch('OneConfig.Stores.JsonFileStore.open', mock_open(read_data=self.js_with_init_stores), create=True) as mock_file:
-            store = JsonFileStore('default', 'path')
+            store = JsonFileStore.from_json_params('name', json.loads(self.store_config))
 
             res = store.get(Const.CFG_INIT_ATTR)
             self.assertEqual(res.type, StoreResult.ResultTypes.VAL_OBJECT_KEYS)
