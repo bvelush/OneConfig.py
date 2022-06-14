@@ -13,6 +13,6 @@
     "python.linting.enabled": true,
     "python.linting.pylintEnabled": true,
     "terminal.integrated.shell.windows": "cmd.exe", 
-    "workbench.colorTheme": "Monokai",
+    "workbench.colorTheme": "Default High Contrast",
 
 }

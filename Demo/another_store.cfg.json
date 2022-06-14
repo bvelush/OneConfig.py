@@ -1,0 +1,15 @@
+{
+    "same": {
+        "features": {
+            "work": {
+                "here": {
+                    "?:DEMOVAR": {
+                        "Value1": "1. A cross-reference with Another Store and Sensor: {{{$.Nesting.L2.L3.L3Value}}}",
+                        "Value2": "2. A cross-reference with Another Store and Sensor: {{{$.Nesting.L2.L3.L3Value}}}", 
+                        "Default": "{{{$AnotherStore.same.features.work.here.?:DEMOVAR.Value1}}}. This is {{{Nesting.L2.L3.L4.value}}}, right?"
+                    }
+                } 
+            }
+        }
+    }
+}

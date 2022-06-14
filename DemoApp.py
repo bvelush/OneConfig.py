@@ -32,10 +32,18 @@ if __name__ == '__main__':
     print(cfg.get('Sensors.S1'))
     print(cfg.get('Sensors.S1.?:DEMOVAR.Value2'))
 
-    os.environ['DEPLOY'] = 'DEV'
+    print('--- Stores and cross-store references ---')
+    print(cfg.get('$.SimpleInt'))
+    print(cfg.get('$AnotherStore.same.features.work.here'))
+    print(cfg.get('CrossStoreReference'))
+    
+    print('\n=== NOW we are aready for some fun ===\n')
+
+    os.environ['DEPLOY'] = 'TEST'
     os.environ['LANG'] = 'EN'
     os.environ['USERDOMAIN'] = 'EMEA'
-    os.environ['PLATFORM'] = 'ARM'
+
+    print(cfg.get('UI.Name'))
     res = cfg.get('Db.connstring')
-    print(cfg)
+    print(res)
 

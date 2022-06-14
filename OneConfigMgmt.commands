@@ -1,3 +1,5 @@
 python OneConfigMgmt.py create_key c:\temp\keyfile.dev
 
-python OneConfigMgmt.py encrypt c:\temp\keyfile.dev tests\resources\testJsonFileStore.cfg.json tests\resources\testJsonFileStore.cfg.bin  
+python OneConfigMgmt.py encrypt c:\temp\keyfile.dev tests\resources\testJsonFileStore.cfg.json tests\resources\testJsonFileStore.cfg.bin 
+
+python OneConfigMgmt.py encrypt c:\temp\keyfile.dev.bin demo\SecDev.cfg.json demo\SecDev.cfg.bin     

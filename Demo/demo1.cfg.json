@@ -30,8 +30,10 @@
             }
         } 
     },
+
+    "CrossStoreReference": "Or even like this: {{{$AnotherStore.same.features.work.here}}}",
     
-    "AppSettings": {
+    "UI": {
         "Name": {
             "?:LOCALE": {
                 "En": "{{{UI.NameEn}}}",
@@ -64,7 +66,7 @@
     },
     
     "DB": {
-        "connString": "server={{{DB.server}}}, protocol=TODO, security=tls12, user={{{Users.DbUser}}}, password={{{Users.DbUserPwd}}}", 
+        "connString": "server={{{DB.server}}}, security=tls12, user={{{Users.DbUser}}}, password={{{Users.DbUserPwd}}}", 
         
         "Server": {
             "?:DOMAIN": {
@@ -112,22 +114,29 @@
 
     "OneConfig": {
         "Stores": {
-            "$SecDev": {
+            "$AnotherStore": {
                 "type": "OneConfig.Stores.JsonFileStore.JsonFileStore", 
                 "params": {
-                    "path": "%APP_ROOT%/Demo/SecDev.cfg.json", 
+                    "path": "%APP_ROOT%/Demo/another_store.cfg.json"
+                }
+            }, 
+            "$SecDev": {
+                "type": "OneConfig.Stores.EncryptedJsonFileStore.EncryptedJsonFileStore", 
+                "params": {
+                    "path": "%APP_ROOT%/Demo/SecDev.cfg.bin", 
                     "keypath": "c:/temp/keyfile.dev.bin"
+                }
+            }, 
+            "$SecTest": {
+                "type": "OneConfig.Stores.EncryptedJsonFileStore.EncryptedJsonFileStore", 
+                "params": {
+                    "path": "%APP_ROOT%/Demo/SecTest.cfg.bin", 
+                    "keypath": "c:/temp/keyfile.test.bin"
                 }
             }
         },
 
-        "$SecTest": {
-            "type": "OneConfig.Stores.EncryptedJsonFileStore.EncryptedJsonFileStore", 
-            "params": {
-                "path": "%APP_ROOT%/Demo/SecTest.cfg.bin", 
-                "keypath": "c:/temp/keyfile.test.bin"
-            }
-        },
+        
         
         "Sensors": {
             "?:DEMOVAR": {
