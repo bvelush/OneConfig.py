@@ -12,7 +12,7 @@ class TestEncryptedJsonStore(unittest.TestCase):
     params = '''
         {
             "path": "%APP_ROOT%/tests/resources/testJsonFileStore.cfg.bin", 
-            "keypath": "c:/temp/keyfile.dev"
+            "keypath": "c:/temp/keyfile.dev.bin"
         }
     '''
 

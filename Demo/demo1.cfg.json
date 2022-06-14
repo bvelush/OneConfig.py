@@ -1,0 +1,126 @@
+{
+    "AppSettings": {
+        "Name": {
+            "?:LOCALE": {
+                "En": "{{{UI.NameEn}}}",
+                "UA": "{{{UI.NameUa}}}",
+                "Default": "{{{UI.Name.?:LOCALE.EN}}}"
+            }
+        }, 
+        
+        "NameEn": "My Precious App -- {{{UI.FlavorEn}}}",
+        "NameUA": "Моя прикольна програмка -- {{{UI.FlavorUa}}}",
+
+        
+        "FlavorEn": {
+            "?:DEPLOY": {
+                "DEV": "Dev", 
+                "Test": "Test", 
+                "Prod": "Enjoy!",
+                "Default": "Better define your deployment!"
+            }
+        },
+        
+        "FlavorUa": {
+            "?:DEPLOY": {
+                "DEV": "Дев", 
+                "Test": "Тест", 
+                "Prod": "Посміхнися!",
+                "Default": "{{{UI.FlavorEn.?:DEPLOY.Default}}}"
+            }
+        }
+    },
+    
+    "DB": {
+        "connString": "server={{{DB.server}}}, protocol=TODO, security=tls12, user={{{Users.DbUser}}}, password={{{Users.DbUserPwd}}}", 
+        
+        "Server": {
+            "?:DOMAIN": {
+                "NAEAST": "{{{Db.Server-NA}}}", 
+                "EMEA": "{{{Db.Server-Eu}}}", 
+                "DEFAULT": "{{{Db.Server-NA}}}" 
+            }
+        },
+
+        "Server-NA": {
+            "?:DEPLOY": {
+                "DEV": "Dev-NA-DB-Server", 
+                "Test": "Test-NA-DB-Server", 
+                "Prod": "{{{$SecProd.DbServerNA}}}",
+                "Default": "{{{Db.Server-NA.?:DEPLOY.Dev}}}"
+            }
+        },
+
+        "Server-EU": {
+            "?:DEPLOY": {
+                "Prod": "{{{$SecProd.DbServer.DbServerEu}}}",
+                "Default": "{{{Db.Server-NA}}}"
+            }
+        }
+    }, 
+
+    "Users": {
+        "DbUser": {
+            "?:DEPLOY": {
+                "DEV": "{{{$SecDev.DbUser}}}", 
+                "Test": "{{{$SecTest.DbUser}}}", 
+                "Prod": "{{{$SecProd.DbUser}}}",
+                "Default": "{{{Users.DbUser.?:DEPLOY.Dev}}}"
+            }
+        }, 
+        "DbUserPwd": {
+            "?:DEPLOY": {
+                "DEV": "{{{$SecDev.DbUserPwd}}}", 
+                "Test": "{{{$SecTest.DbUserPwd}}}", 
+                "Prod": "{{{$SecProd.DbUserPwd}}}",
+                "Default": "{{{Users.DbUserPwd.?:DEPLOY.Dev}}}"
+            }
+        }
+    }, 
+
+    "OneConfig": {
+        "Stores": {
+            "$SecDev": {
+                "type": "OneConfig.Stores.JsonFileStore.JsonFileStore", 
+                "params": {
+                    "path": "%APP_ROOT%/Demo/SecDev.cfg.json", 
+                    "keypath": "c:/temp/keyfile.dev.bin"
+                }
+            }
+        },
+
+        "$SecTest": {
+            "type": "OneConfig.Stores.EncryptedJsonFileStore.EncryptedJsonFileStore", 
+            "params": {
+                "path": "%APP_ROOT%/Demo/SecTest.cfg.bin", 
+                "keypath": "c:/temp/keyfile.test.bin"
+            }
+        },
+        
+        "Sensors": {
+            "?:DEPLOY": {
+                "type": "OneConfig.Sensors.EnvSensor.EnvSensor",
+                "params": {
+                    "envvar": "DEPLOY"
+                }
+            },
+            "?:LOCALE": {
+                "type": "OneConfig.Sensors.EnvSensor.EnvSensor",
+                "params": {
+                    "envvar": "LANG"
+                }
+            },
+            "?:DOMAIN": {
+                "type": "OneConfig.Sensors.DomainSensor.DomainSensor",
+                "params": {
+                }
+            }, 
+            "?:PLATFORM": {
+                "type": "OneConfig.Sensors.EnvSensor.EnvSensor",
+                "params": {
+                    "envvar": "PLATFORM"
+                }
+            }
+        }
+    }
+}

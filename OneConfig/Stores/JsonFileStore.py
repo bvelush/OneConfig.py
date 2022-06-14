@@ -32,9 +32,8 @@ class JsonFileStore(IStore):
         except Exception as err:
             raise Errors.StoreInitError('Error opening config store with parameters passed. Check the origical exception below for more info') from err
 
-
         try: 
-            with open(path, 'rt') as f:
+            with open(path, encoding="utf8") as f:
                 raw_content = f.read() 
         except OSError as err:  
             raise Errors.StoreNotFound() from err
@@ -42,14 +41,30 @@ class JsonFileStore(IStore):
 
         return JsonFileStore(store_name, raw_content)
 
-                
+
     @property
     def name(self):
         return self._name
 
+
+    def get(self, key: str) -> StoreResult:
+        config_key = key
+
+        # traverse through subkeys to the required level
+        # as a result, curr_json will have the json object of desired hierarchy
+        curr_json = self._store
+        for subkey in self._split_config_key(config_key):
+            try:
+                curr_json = curr_json[subkey]
+            except KeyError as ex: # Question: are there other types or ex possible? What to do with them?
+                return self._process_lookup_excepion(subkey, key, ex)
+        return StoreResult(curr_json, self.allow_object_result)
+
+
     def _open_store(self, name: str):
         with open(name) as f:
             self._store = json.load(f)
+
 
     def _split_config_key(self, config_key: str) -> List[str]:
         '''
@@ -67,6 +82,7 @@ class JsonFileStore(IStore):
 
         return subkeys
 
+
     def _process_lookup_excepion(self, subkey: str, key: str, ex: Exception) -> StoreResult:
         '''
         ### Processes exceptions in traversing keys
@@ -78,20 +94,3 @@ class JsonFileStore(IStore):
         
         self._logger.warning(f'Subkey "{subkey}" of the key "{key}" is not found in the store "{self.name}", returning default value. Exception: {ex}')
         return StoreResult(None)
-
-    # def _parse_value(self, )
-
-    def get(self, key: str) -> StoreResult:
-        # config_key, sensor_key = StrUtil.find_sensor_in_key(key)
-        config_key = key
-
-        # traverse through subkeys to the required level
-        # as a result, curr_json will have the json object of desired hierarchy
-        curr_json = self._store
-        for subkey in self._split_config_key(config_key):
-            try:
-                curr_json = curr_json[subkey]
-            except KeyError as ex: # Question: are there other types or ex possible? What to do with them?
-                return self._process_lookup_excepion(subkey, key, ex)
-
-        return StoreResult(curr_json, self.allow_object_result)

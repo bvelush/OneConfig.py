@@ -9,3 +9,4 @@ def get_app_path() -> str:
 
 def expand_approot(s: str) -> str:
     return s.replace(STORE_APPROOT_TEMPLATE, get_app_path())
+    

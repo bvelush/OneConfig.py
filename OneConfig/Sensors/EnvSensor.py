@@ -27,4 +27,6 @@ class EnvSensor(ISensor):
             self._logger.warning(f'Environment variable "{self._envvar_name}" the sensor definition "{self.name}" is not found')
             return Const.SENSOR_DEFAULT.upper()
         
-        return envvar_value.upper()
+        ret_val = envvar_value.upper()
+        self._logger.debug(f'EnvSensor "{self.name}" for envvar "{self._envvar_name}" is resolved as "{ret_val}"')
+        return ret_val
