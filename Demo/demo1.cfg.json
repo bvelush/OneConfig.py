@@ -1,4 +1,36 @@
 {
+    "Simple-String": "some string config value", 
+    "SimpleInt": 42, 
+    "Simple-Bool": true, 
+    "Simple_Array": ["Some String", false, 1000],
+
+    "Nesting": {
+        "l2": {
+            "l2value": "value at level 2", 
+            "L3": {
+                "l3value": "we can go deeper!", 
+                "L4": {
+                    "Value": "Cool!!"
+                } 
+            }
+        }
+    },
+
+    "References": {
+        "SimpleReference": "{{{Nesting.L2.L3.L3Value}}}",
+        "EmbeddedReference": "References are {{{Nesting.L2.L3.L4.value}}}, this is {{{Simple-Bool}}}"
+    },
+
+    "Sensors": {
+        "S1": {
+            "?:DEMOVAR": {
+                "Value1": "something you do when DEMOVAR has 'value1'", 
+                "Value2": "another thing to do, Value is Value2, and references are working: '{{{Nesting.L2.L3.L4.value}}}'", 
+                "Default": "some other value"
+            }
+        } 
+    },
+    
     "AppSettings": {
         "Name": {
             "?:LOCALE": {
@@ -98,6 +130,13 @@
         },
         
         "Sensors": {
+            "?:DEMOVAR": {
+                "type": "OneConfig.Sensors.EnvSensor.EnvSensor",
+                "params": {
+                    "envvar": "DemoVar"
+                }
+            }, 
+
             "?:DEPLOY": {
                 "type": "OneConfig.Sensors.EnvSensor.EnvSensor",
                 "params": {

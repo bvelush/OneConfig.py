@@ -27,7 +27,7 @@ class Cfg:
     _configCache: Dict[str, StoreResult] = CaseInsensitiveDict() # key -> StoreResult
     _root_config_path: Path = None
     _logger = logging.getLogger(__name__)
-    _STR_CONFIGKEY = r'(?P<fullKey>((?P<store>\$[\w\-]*)\.)?(?P<path>\w+(\.[\w\-\?\:]+)*)+)'
+    _STR_CONFIGKEY = r'(?P<fullKey>((?P<store>\$[\w\-]*)\.)?(?P<path>[\w\-]+(\.[\w\-\?\:]+)*)+)'
     _RX_STR_CONFIGKEY = re.compile(_STR_CONFIGKEY)
     _RX_STR_INLINE_CONFIGKEY = re.compile(r'(\{\{\{){1}' + _STR_CONFIGKEY + r'(\}\}\}){1}')
 
@@ -84,18 +84,24 @@ class Cfg:
 
 
     def get(self, key: str) -> Any:
-        return self._inner_get(key, 0)
+        try:
+            return self._inner_get(key, 0)
+        except Errors.KeyNestingLimit as err:
+            msg = f'Keys and sensors nesting in the key "{key}" reached it\'s limit of "{Const.CFG_MAX_RECURSION}"'
+            self._logger.error(msg)
+            raise Errors.KeyNestingLimit(msg) from err
+
 
     def _inner_get(self, key: str, count: int) -> Any:  
         self._logger.debug(f'key:"{key}", count: "{count}"')
         if count > Const.CFG_MAX_RECURSION:
-            raise Errors.KeyNestingLimit('CATCH ME AT GET TO HAVE ORIGINAL PATH -> ... -> ...')
+            raise Errors.KeyNestingLimit('TODO: Need traverse history')
 
         key_components = self._RX_STR_CONFIGKEY.search(key).groupdict()
         store = self._get_store(key_components['store'])
         result = store.get(key_components['path'])
         if result.is_bool or result.is_int or result.is_list:
-            return result
+            return result.value
 
         elif result.is_string: # the string could contain inner OneConfig keys, need to recursively resolve them
             value_to_return = result.value
@@ -105,6 +111,8 @@ class Cfg:
                 if inner_key:
                     # replace inner_key with inner_key_value in result.value:
                     inner_key_value = self._inner_get(inner_key.groupdict()['fullKey'], count+1)
+                    if not isinstance(inner_key_value, str):
+                        inner_key_value = str(inner_key_value)
                     value_to_return = self._RX_STR_INLINE_CONFIGKEY.sub(inner_key_value, value_to_return, count=1)
                 else:
                     return value_to_return
